@@ -16,6 +16,8 @@ dbutils.widgets.text("file_loc", default_user_path, "File Location")
 # COMMAND ----------
 
 # dbutils.widgets.remove("file_loc")
+tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
+print(tags)
 
 # COMMAND ----------
 
