@@ -31,10 +31,23 @@ import os
 source_df = (spark.read.format('csv')
                        .option('header',True)
                        .option('inferSchema',True)
-                       .load(f"file:{os.getcwd()}/data/winequality-red.csv")
+                       .load("file:/Workspace/Repos/{}/dbx-data-quality/data/winequality-red.csv".format(current_user))
   )
 
 display(source_df)
+
+# COMMAND ----------
+
+# import os
+
+# # "file:" prefix and absolute file path are required for PySpark
+# source_df = (spark.read.format('csv')
+#                        .option('header',True)
+#                        .option('inferSchema',True)
+#                        .load(f"file:{os.getcwd()}/data/winequality-red.csv")
+#   )
+
+# display(source_df)
 
 # COMMAND ----------
 
