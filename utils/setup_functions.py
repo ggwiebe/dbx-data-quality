@@ -17,15 +17,13 @@ def get_current_notebook(tags,notebook_json,user):
   print("Notebook name: {current_notebook}, current user: {current_user}...".format(current_notebook,current_user))
 
 # Function to setup component name variable
-def set_data_env(tags,store_loc,db_name):
+def set_data_env(store_loc,db_name):
   print("get_component called: setting data environment for location: {} and database name: {}...".format(store_loc,db_name))
-  tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
-  print(tags)
 
   data_file_loc = "{}{}".format(store_loc,db_name) 
   db_loc = "{}{}/{}.db".format(store_loc,db_name,db_name) 
 
-  print("Using...\n    store location = {store_loc}\n            Database = {db_name},\n       db location = {store_loc}  \n db storage location = {}...".format(store_loc,db_name,data_file_loc,db_loc))
+  print("Using...\n    store location = {store_loc}\n            Database = {db_name},\n       db location = {db_loc}".format(store_loc,db_name,db_loc))
 
 # Function to setup database
 def create_db(db_name,db_loc):
