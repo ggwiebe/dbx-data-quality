@@ -18,7 +18,7 @@ def get_current_notebook(tags,notebook_json,user):
 
 # Function to setup component name variable
 def set_data_env(tags,store_loc,db_name):
-  print("get_component called: finding data location={db_name}...".format(db_loc,db_name))
+  print("get_component called: setting data environment for location: {} and database name: {}...".format(store_loc,db_name))
   tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
   print(tags)
 
