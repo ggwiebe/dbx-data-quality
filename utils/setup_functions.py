@@ -23,11 +23,11 @@ def set_data_env(store_loc,db_name):
   data_file_loc = "{}{}".format(store_loc,db_name) 
   db_loc = "{}{}/{}.db".format(store_loc,db_name,db_name) 
 
-  print("Using...\n    store location = {store_loc}\n            Database = {db_name},\n       db location = {db_loc}".format(store_loc,db_name,db_loc))
+  print("Using...\n    store location = {}\n            Database = {},\n       db location = {}".format(store_loc,db_name,db_loc))
 
 # Function to setup database
 def create_db(db_name,db_loc):
-  print("create_db called: creating storage location, db_loc={db_loc}, and creating db, db_name={db_name}...".format(db_loc,db_name))
+  print("create_db called: creating storage location, db_loc={}, and creating db, db_name={}...".format(db_loc,db_name))
   dbutils.fs.mkdirs(db_loc)
   spark.sql(f"""CREATE DATABASE {db_name}
     LOCATION '{db_loc}'
