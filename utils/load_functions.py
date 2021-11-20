@@ -3,18 +3,6 @@ from pyspark.sql.functions import *
 from pyspark.sql.functions import monotonically_increasing_id 
 from pyspark.sql.window import Window
 
-# Function to setup component name variable
-def get_component():
-  print("get_component called: finding component info...")
-  tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
-  print(tags)
-
-  notebook_path_json = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
-  current_notebook = notebook_path_json['extraContext']['notebook_path']
-  current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
-
-  print("Notebook name: {current_notebook}, current user: {current_user}...".format(current_notebook,current_user))
-
 
 # Enrich Source dataframe with tracking columns
 def enrich_source(df,start_dt,comp):

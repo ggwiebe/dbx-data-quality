@@ -12,6 +12,11 @@ from utils.setup_functions import *
 
 # COMMAND ----------
 
+# Get the current environment as a starting point
+get_env()
+
+# COMMAND ----------
+
 # TODO resolve these "create" widgets with "reset" widget 
 # Setup widgets for General Setup Process
 dbutils.widgets.dropdown("SetupType", 'new',['new','clear','reset'],"Setup DB Options")
@@ -33,6 +38,10 @@ SetupType = dbutils.widgets.get("SetupType")
 # Remove widgets as necessary
 # dbutils.widgets.remove("db_name")
 
+# COMMAND ----------
+
+# Set data environment from current env plus user supplied values
+set_data_env(store_loc,db_name)
 
 # COMMAND ----------
 
