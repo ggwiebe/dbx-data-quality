@@ -23,7 +23,7 @@ def set_data_env(store_loc,db_name):
   data_file_loc = "{}{}".format(store_loc,db_name) 
   db_loc = "{}{}/{}.db".format(store_loc,db_name,db_name) 
 
-  print("Using...\n    store location = {}\n            Database = {},\n       db location = {}".format(store_loc,db_name,db_loc))
+  print("Using...\n    store location = {}\n          Database = {},\n       db location = {}".format(store_loc,db_name,db_loc))
 
 # Function to setup database
 def create_db(db_name,db_loc):
