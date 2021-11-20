@@ -5,13 +5,13 @@ import json
 from datetime import datetime
 
 # Function to setup component name variable
-def get_env():
+def get_env(tags,notebook_json):
   print("get_component called: finding component info...")
-  tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
-  print(tags)
+  # tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
+  # print(tags)
 
-  notebook_path_json = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
-  current_notebook = notebook_path_json['extraContext']['notebook_path']
+  # notebook_path_json = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
+  current_notebook = notebook_json['extraContext']['notebook_path']
   current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
 
   print("Notebook name: {current_notebook}, current user: {current_user}...".format(current_notebook,current_user))
