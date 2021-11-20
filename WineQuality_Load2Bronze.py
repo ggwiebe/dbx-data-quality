@@ -12,7 +12,8 @@ pip install -r requirements.txt
 
 # COMMAND ----------
 
-# MAGIC %run ./config/load_setup
+# Replace running a notebook, with an import (as below)
+# %run ./config/load_setup
 
 # COMMAND ----------
 

@@ -4,6 +4,7 @@
 # MAGIC Defaults to not doing this, so you can run by default without damaging existing.
 
 # COMMAND ----------
+
 import json
 from datetime import datetime
 
@@ -12,20 +13,32 @@ from utils.setup_functions import *
 
 # COMMAND ----------
 
-# Get the current environment as a starting point
-get_env()
+# Use dbutils to extract environment values
+current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
+tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
+notebook_json = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
+
+default_user_path = "/Users/{}/".format(current_user)
+current_notebook = notebook_json['extraContext']['notebook_path']
+
+print("     Current user: {}\nDefault User Path: {}\n    Notebook name: {}".format(current_user,default_user_path,current_notebook))
 
 # COMMAND ----------
 
-# TODO resolve these "create" widgets with "reset" widget 
 # Setup widgets for General Setup Process
-dbutils.widgets.dropdown("SetupType", 'new',['new','clear','reset'],"Setup DB Options")
-dbutils.widgets.dropdown("CreateTable", "No", ["Yes", "No"], "Create Tracking Table")
+dbutils.widgets.dropdown("setup_type", 'new',['new','clear','reset'],"Setup DB Options")
+dbutils.widgets.dropdown("create_table", "No", ["Yes", "No"], "Create Tracking Table")
 
 # Setup widgets for Setup Config
 dbutils.widgets.text("store_loc", default_user_path, "User Storage Location")
-dbutils.widgets.text("db_name", db_name, "Database Name")
-dbutils.widgets.text("track_table_name", track_table_name, "Track Table Name")
+dbutils.widgets.text("db_name", "YourDb", "Database Name")
+dbutils.widgets.text("track_table_name", "load_track", "Track Table Name")
+
+# dbutils.widgets.remove("setup_type")
+# dbutils.widgets.remove("create_table")
+# dbutils.widgets.remove("store_loc")
+# dbutils.widgets.remove("db_name")
+# dbutils.widgets.remove("track_table_name")
 
 # COMMAND ----------
 
@@ -33,10 +46,8 @@ dbutils.widgets.text("track_table_name", track_table_name, "Track Table Name")
 db_name = dbutils.widgets.get("db_name")
 track_table_name = dbutils.widgets.get("track_table_name")
 store_loc = dbutils.widgets.get("store_loc")
-SetupType = dbutils.widgets.get("SetupType")
-
-# Remove widgets as necessary
-# dbutils.widgets.remove("db_name")
+setup_type = dbutils.widgets.get("setup_type")
+create_table= dbutils.widgets.get("create_table")
 
 # COMMAND ----------
 
@@ -51,11 +62,12 @@ set_env(store_loc,db_name)
 # COMMAND ----------
 
 # Create DB
-if SetupType == "new":
+if setup_type == "new":
   print("Setting up / creating new database {db_name} in storage location {db_loc}...".format(db_name,db_loc))
   create_db(db_loc,db_name)
 
-if dbutils.widgets.get("CreateTable") == "Yes":
+# Create DB
+if create_table") == "Yes":
   print("Setting up load tracking table...")
   create_track_table(db_name,track_table_name)
 
@@ -64,19 +76,12 @@ print("Done!")
 # drop_table(use_db,"quality_red_bronze")
 
 
-notebook_path_json = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
-current_notebook = notebook_path_json['extraContext']['notebook_path']
-
-current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
-default_user_path = "/Users/{}/".format(current_user)
-db_name = "ggw_wine"
-track_table_name = "load_track"
-file_path = "file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/"
-measure_usecase_tag = "data_load" 
-
-load_start_dt = datetime.now()
-
 print("config setup:")
 print("  current_notebook = {}\n      current_user = {},\n default_user_path = {}".format(current_notebook,current_user,default_user_path))
 print("         file_path = {}".format(file_path))
 print("           db_name = {}\n  track_table_name = {}\n     load_start_dt = {}".format(db_name,table_name,load_start_dt))
+
+# COMMAND ----------
+
+# not done now...
+load_start_dt = datetime.now()
