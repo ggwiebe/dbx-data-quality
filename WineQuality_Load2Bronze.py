@@ -16,6 +16,10 @@ pip install -r requirements.txt
 
 # COMMAND ----------
 
+from utils.load_functions import *
+
+# COMMAND ----------
+
 # MAGIC %run ./utils/load_functions
 
 # COMMAND ----------
