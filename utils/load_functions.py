@@ -1,5 +1,5 @@
-# Databricks notebook source
-# MAGIC %md ### Utility Notebook to set common load measures & functions
+### Databricks notebook source
+### MAGIC %md ### Utility Notebook to set common load measures & functions
 
 # COMMAND ----------
 
