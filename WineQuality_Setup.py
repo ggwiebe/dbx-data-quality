@@ -1,7 +1,13 @@
 # Databricks notebook source
-# MAGIC %md ## Setup notebook for prototype: create database, tracking table, and set common variables, etc.
+# MAGIC %md # Template Setup Notebook
+
+# COMMAND ----------
+
+# MAGIC %md ## Create core database & tracking elements
+# MAGIC e.g. database, tracking table, and set common variables, etc.
 # MAGIC   
-# MAGIC Defaults to not doing this, so you can run by default without damaging existing.
+# MAGIC Use widgets to assist in setting these values.  
+# MAGIC One can avoid re-creating various elements, so you can run by default without damaging existing.
 
 # COMMAND ----------
 
@@ -22,6 +28,10 @@ default_user_path = "/Users/{}/".format(current_user)
 current_notebook = notebook_json['extraContext']['notebook_path']
 
 print("     Current user: {}\nDefault User Path: {}\n    Notebook name: {}".format(current_user,default_user_path,current_notebook))
+
+# COMMAND ----------
+
+# MAGIC %md ## Create user widgets & run variables
 
 # COMMAND ----------
 

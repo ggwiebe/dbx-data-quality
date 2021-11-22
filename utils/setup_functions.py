@@ -18,7 +18,7 @@ def get_current_notebook(tags,notebook_json,user):
 
 # Function to setup component name variable
 def set_data_env(store_loc,db_name):
-  print("get_component called: setting data environment for location: {} and database name: {}...".format(store_loc,db_name))
+  print("set_data_env() called: setting data environment for location: {} and database name: {}...".format(store_loc,db_name))
 
   data_file_loc = "{}{}".format(store_loc,db_name) 
   db_loc = "{}{}/{}.db".format(store_loc,db_name,db_name) 
