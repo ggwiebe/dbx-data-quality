@@ -18,6 +18,7 @@ from datetime import datetime
 # import local functions
 from utils.setup_functions import *
 
+
 # COMMAND ----------
 
 # DBTITLE 1,Get current notebook context
@@ -104,3 +105,13 @@ print("config setup:")
 print("  current_notebook = {}\n      current_user = {},\n default_user_path = {}".format(current_notebook,current_user,default_user_path))
 print("            db_loc = {}\n           db_name = {}".format(db_loc,db_name))
 print("  track_table_name = {}\n  current_datetime = {}".format(track_table_name,current_datetime))
+
+# COMMAND ----------
+
+from utils.setup_functions import *
+setup_helper = TrackerSetupHelper(dbutils)
+# setup_helper.db_utilstuff(store_loc)
+# setup_helper.db_utilstuff("/Users/glenn.wiebe@databricks.com")
+# setup_helper.db_utilstuff()
+setup_helper.my_fs_test(dbutils)
+

@@ -4,6 +4,22 @@
 import json
 from datetime import datetime
 
+class TrackerSetupHelper:
+
+  def __init__(self, dbutils):
+    self.dbutils = dbutils
+
+  # Test dbutils passing
+  def db_utilstuff(self,loc):
+    print("db_utilstuff called: testing a dbutils.fs.ls({}) function call...".format(loc))
+    self.dbutils.fs.ls(loc)
+    print("db_utilstuff done!")
+
+  def my_fs_test(self,dbutils):
+    print("my_fs_test called: testing a dbutils.fs.ls({}) function call...".format("/Users/glenn.wiebe@databricks.com"))
+    ret = dbutils.fs.ls("/Users/glenn.wiebe@databricks.com")
+    return ret
+  
 # Function to setup component name variable
 def get_current_notebook(tags,notebook_json,user):
   print("get_component called: finding component info...")
