@@ -58,6 +58,20 @@ class ConfigHelper:
     
     return attrs
 
+  # function to process json-based config
+  def set_config(self, store_loc, db_name, track_table_name):
+    print("set_config called: (useful when getting config from Secrets)...")
+    self.store_loc = store_loc
+    self.db_name = db_name
+    self.track_table_name = track_table_name
+    
+    # get all attributes of this object
+    attrs = vars(self)
+    # now dump this in some way or another
+    print(" ", ",\n  ".join("%s: %s" % item for item in attrs.items()))
+    
+    return attrs
+
   # Function to setup component name variable
   def set_data_env(self,store_loc,db_name):
     print("set_data_env() called...")
