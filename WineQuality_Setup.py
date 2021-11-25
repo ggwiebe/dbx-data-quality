@@ -17,21 +17,50 @@ from datetime import datetime
 
 # import local functions
 from utils.setup_functions import *
+config_helper = ConfigHelper(spark,dbutils)
+
+# COMMAND ----------
+
+# MAGIC %md ## Initialize Environment
+
+# COMMAND ----------
+
+ret = config_helper.init_env()
+
+# You can also get a list of the config_helper object attributes via:
+# ret = config_helper.list_attrs()
+
+# COMMAND ----------
+
+# MAGIC %md ## Config - via json 
+
+# COMMAND ----------
+
+ret = config_helper.parse_config("file:/Workspace{}/config/setup.json".format(config_helper.folder))
+
+# COMMAND ----------
+
+# MAGIC %md ## Config - via "secrets" Key/Value store
+
+# COMMAND ----------
+
 
 
 # COMMAND ----------
 
 # DBTITLE 1,Get current notebook context
-# Use dbutils to extract environment values
-current_datetime = datetime.now()
-current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
-tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
-notebook_json = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
+### DELETE ME - now in config_helper object!!!!!! 
 
-default_user_path = "/Users/{}/".format(current_user)
-current_notebook = notebook_json['extraContext']['notebook_path']
+# # Use dbutils to extract environment values
+# current_datetime = datetime.now()
+# current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
+# tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
+# notebook_json = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
 
-print(" Setup started at: {}\n     Current user: {}\nDefault User Path: {}\n    Notebook name: {}".format(current_datetime,current_user,default_user_path,current_notebook))
+# default_user_path = "/Users/{}/".format(current_user)
+# current_notebook = notebook_json['extraContext']['notebook_path']
+
+# print(" Setup started at: {}\n     Current user: {}\nDefault User Path: {}\n    Notebook name: {}".format(current_datetime,current_user,default_user_path,current_notebook))
 
 # COMMAND ----------
 
@@ -45,9 +74,9 @@ dbutils.widgets.dropdown("setup_type", 'New',['New','Clear','Reset'],"Setup DB O
 dbutils.widgets.dropdown("create_table", "No", ["Yes", "No"], "Create Tracking Table")
 
 # Setup widgets for Setup Config
-dbutils.widgets.text("store_loc", default_user_path, "User Storage Location")
-dbutils.widgets.text("db_name", "YourDb", "Database Name")
-dbutils.widgets.text("track_table_name", "load_track", "Track Table Name")
+dbutils.widgets.text("store_loc", config_helper.default_user_path, "User Storage Location")
+dbutils.widgets.text("db_name", config_helper.db_name, "Database Name")
+dbutils.widgets.text("track_table_name", config_helper.track_table_name, "Track Table Name")
 
 # dbutils.widgets.remove("setup_type")
 # dbutils.widgets.remove("create_table")
@@ -70,31 +99,38 @@ print(" db_name: {}\n track_table_name: {}\n store_loc: {}\n setup_type: {}\n cr
 # COMMAND ----------
 
 # Set data environment from current env plus user supplied values
-db_loc = set_data_env(store_loc,db_name)
-print(" db_loc: {}".format(db_loc))
+db_loc = config_helper.set_data_env(store_loc,db_name)
+# print("Returned db_loc: {}".format(db_loc))
 
 # COMMAND ----------
 
+# Note current environment set into ConfigHelper object
+config_helper.list_attrs()
+
 # Create DB
 if setup_type == "New":
-  print("Setting up / creating new database {} in storage location {}...".format(db_name,db_loc))
-  dbutils.fs.mkdirs(db_loc)
-  print("...storage location created, db_loc={}.".format(db_loc))
-  create_db(db_loc,db_name,spark)
+  print("Setting up new database {} in storage location {}...".format(config_helper.db_name,config_helper.store_loc))
+  #   dbutils.fs.mkdirs(db_loc)
+  config_helper.setup_db()
+  print("After new DB, set up load tracking table...")
+  config_helper.create_track_table(db_name,track_table_name,spark)
+
+elif setup_type == "Reset":
+  print("Re-setting up database {} in storage location {}...".format(config_helper.db_name,config_helper.store_loc))
+  config_helper.reset_db()
+  print("After reset DB, set up load tracking table...")
+  config_helper.setup_track_table()
 
 elif setup_type == "Clear":
   print("TODO implement Clear")
 
-elif setup_type == "Reset":
-  print("TODO implement Reset")
+  # Create Tracking Table
+  if create_table == "Yes":
+    print("Setting up load tracking table...")
+    config_helper.create_track_table(db_name,track_table_name,spark)
 
-# Create Tracking Table
-if create_table == "Yes":
-  print("Setting up load tracking table...")
-  create_track_table(db_name,track_table_name,spark)
-
-elif create_table == "No":
-  print("Skipped the setting up of the load tracking table.")
+  elif create_table == "No":
+    print("Skipped the setting up of the load tracking table.")
   
 print("Done!")
 
@@ -102,16 +138,41 @@ print("Done!")
 
 
 print("config setup:")
-print("  current_notebook = {}\n      current_user = {},\n default_user_path = {}".format(current_notebook,current_user,default_user_path))
-print("            db_loc = {}\n           db_name = {}".format(db_loc,db_name))
-print("  track_table_name = {}\n  current_datetime = {}".format(track_table_name,current_datetime))
+print("  current_notebook = {}\n      current_user = {},\n default_user_path = {}".format(config_helper.current_notebook,config_helper.current_user,config_helper.default_user_path))
+print("            db_loc = {}\n           db_name = {}".format(config_helper.db_loc,config_helper.db_name))
+print("  track_table_name = {}\n  current_datetime = {}".format(config_helper.track_table_name,datetime.now()))
 
 # COMMAND ----------
 
+# Exit here successfully!
+dbutils.notebook.exit("Completed WineQuality_Setup Notebook!")
+
+# COMMAND ----------
+
+# MAGIC %md ## Appendix Section - test code in appendix after notebook "exit()"
+
+# COMMAND ----------
+
+# Re-defined here for ease of testing
 from utils.setup_functions import *
-setup_helper = TrackerSetupHelper(dbutils)
-# setup_helper.db_utilstuff(store_loc)
-# setup_helper.db_utilstuff("/Users/glenn.wiebe@databricks.com")
-# setup_helper.db_utilstuff()
-setup_helper.my_fs_test(dbutils)
+config_helper = ConfigHelper(spark,dbutils)
+
+# COMMAND ----------
+
+my_list = config_helper.db_fs_list("/Users/glenn.wiebe@databricks.com")
+display(my_list)
+
+# COMMAND ----------
+
+config_helper.parse_config(f"file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/config/setup.json")
+
+# COMMAND ----------
+
+setup_helper
+attrs = vars(setup_helper)
+# now dump this in some way or another
+print(',\n '.join("%s: %s" % item for item in attrs.items()))
+
+# COMMAND ----------
+
 
