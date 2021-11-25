@@ -16,7 +16,7 @@ import json
 from datetime import datetime
 
 # import local functions
-from utils.setup_functions import *
+from utils.config_helper import *
 config_helper = ConfigHelper(spark,dbutils)
 
 # COMMAND ----------
