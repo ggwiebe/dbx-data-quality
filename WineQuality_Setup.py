@@ -32,35 +32,42 @@ ret = config_helper.init_env()
 
 # COMMAND ----------
 
-# MAGIC %md ## Config - via json 
+# MAGIC %md ## Config - via json  
+# MAGIC   
+# MAGIC Values are read from config/setup.json file and stored in setup_helper object,  
+# MAGIC and then pushed into widgets for interactive use. 
 
 # COMMAND ----------
 
-ret = config_helper.parse_config("file:/Workspace{}/config/setup.json".format(config_helper.folder))
+# If using Secrets key/value method comment this section of code out
+# ret = config_helper.parse_config("file:/Workspace{}/config/setup.json".format(config_helper.folder))
 
 # COMMAND ----------
 
-# MAGIC %md ## Config - via "secrets" Key/Value store
+# MAGIC %md ## Config - via "secrets" Key/Value store  
+# MAGIC   
+# MAGIC This approach requires a Secret Scope and three "Secret" values: key="store_loc", key="db_name", key="track_table_name"  
+# MAGIC   
+# MAGIC Those values are set externally via the Databricks CLI using the following commands:  
+# MAGIC ```
+# MAGIC databricks secrets create-scope --scope ggw_scope
+# MAGIC ```
+# MAGIC   
+# MAGIC Then to your chosen scope add the application-specific necessary config values, via these three comnands:  
+# MAGIC ```
+# MAGIC databricks secrets put --scope ggw_scope --key store_loc        --string-value /users/glenn.wiebe@databricks.com/
+# MAGIC databricks secrets put --scope ggw_scope --key db_name          --string-value ggw_wine
+# MAGIC databricks secrets put --scope ggw_scope --key track_table_name --string-value load_track
+# MAGIC ```  
 
 # COMMAND ----------
 
-
-
-# COMMAND ----------
-
-# DBTITLE 1,Get current notebook context
-### DELETE ME - now in config_helper object!!!!!! 
-
-# # Use dbutils to extract environment values
-# current_datetime = datetime.now()
-# current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
-# tags = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()
-# notebook_json = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
-
-# default_user_path = "/Users/{}/".format(current_user)
-# current_notebook = notebook_json['extraContext']['notebook_path']
-
-# print(" Setup started at: {}\n     Current user: {}\nDefault User Path: {}\n    Notebook name: {}".format(current_datetime,current_user,default_user_path,current_notebook))
+# use the key/value pairs to configure the UI for interactively configuring the setup notebook
+ret = config_helper.set_config(
+                        dbutils.secrets.get(scope="ggw_scope", key="store_loc"), 
+                        dbutils.secrets.get(scope="ggw_scope", key="db_name"),
+                        dbutils.secrets.get(scope="ggw_scope", key="track_table_name"), 
+)
 
 # COMMAND ----------
 
@@ -172,7 +179,3 @@ setup_helper
 attrs = vars(setup_helper)
 # now dump this in some way or another
 print(',\n '.join("%s: %s" % item for item in attrs.items()))
-
-# COMMAND ----------
-
-
