@@ -1,5 +1,16 @@
-# dbx-data-quality
-Databricks Data Quality
+# dbx-data-quality - Databricks Data Quality  
+  
+Prototype solution for tracking the quality and lineage of data/files ingested into Databricks.  
+  
+## Project Ogranization  
+    
+This project demonstrates an approach to organizing a project that:
+- Includes Python library components
+- Leverages common config via JSON or Secrets
+- Accounts for interactive setup and automated execution
+  
+These elements in the broader Databricks DevOps landscape is shown in the following diagram:
+![Databricks Developer & Operations Landsape](./images/DevOps.png "Databrisk DevOps")
 
 ## Components  
   
