@@ -3,7 +3,14 @@
 
 # COMMAND ----------
 
-# MAGIC %md ## Import requirements, define config & utilities
+# MAGIC %md ## Import requirements, define config & utilities  
+# MAGIC   
+# MAGIC Note, the below import uses the local python library files;
+# MAGIC An alternate approach required pre-arbitrary files was to use %run like this:
+# MAGIC ```
+# MAGIC %run ./config/load_setup
+# MAGIC ```
+# MAGIC but this runs within the context of the external notebook, not within this notebook.
 
 # COMMAND ----------
 
@@ -17,20 +24,95 @@ pip install -r requirements.txt
 
 # COMMAND ----------
 
-from utils.load_functions import *
+# MAGIC %md ### Import ConfigHelper object
 
 # COMMAND ----------
 
-# MAGIC %run ./utils/load_functions
+#%run ./utils/load_functions
+from utils.load_functions import *
+from utils.config_helper import *
+config_helper = ConfigHelper(spark,dbutils)
+
+# COMMAND ----------
+
+# MAGIC %md ### Initialize the environment
+
+# COMMAND ----------
+
+ret = config_helper.init_env()
+
+# COMMAND ----------
+
+# MAGIC %md ### Configure the environment (from settings json/secrets)
+
+# COMMAND ----------
+
+# use the key/value pairs to configure the UI for interactively configuring the setup notebook
+ret = config_helper.set_config(
+                        dbutils.secrets.get(scope="ggw_scope", key="store_loc"), 
+                        dbutils.secrets.get(scope="ggw_scope", key="db_name"),
+                        dbutils.secrets.get(scope="ggw_scope", key="track_table_name"), 
+)
+
+# COMMAND ----------
+
+# MAGIC %md ### Set DB Environment
+
+# COMMAND ----------
+
+ret = config_helper.set_data_env(config_helper.store_loc,config_helper.db_name)
+# Workaround to display config secret information
+displayHTML("<span/>".join("store_loc: " + config_helper.store_loc))
+displayHTML("<span/>".join("db_name: " + config_helper.db_name))
+displayHTML("<span/>".join("data_file_loc: " + config_helper.data_file_loc))
+displayHTML("<span/>".join("db_loc: " + config_helper.db_loc))
+displayHTML("<span/>".join("track_table_name: " + config_helper.track_table_name))
+
+
+# COMMAND ----------
+
+# MAGIC %md ### Personalize Run Interactively
 
 # COMMAND ----------
 
 dbutils.widgets.dropdown("ReadData", "Yes", ["Yes", "No"], "Re-read Data")
-# src_file = "file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red.csv"
-# src_file = "file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red-badchecksum.csv"
-src_file = "file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red-missingrows.csv"
-target_table = "quality_red_bronze"
-# dbutils.widgets.remove("Read Data")
+dbutils.widgets.dropdown("LocRelative", "ReposLoc", ["ReposLoc", "StoreLoc"], "Location Relative To")
+dbutils.widgets.text("SourceFile", "data/winequality-red.csv", "Source File")
+dbutils.widgets.text("SourceFolder", "data/folder/", "Source File")
+dbutils.widgets.text("TargetTable", "quality_red_wine", "Target Table Name")
+# source_file = "file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red.csv"
+# source_file = "file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red-badchecksum.csv"
+#dbutils.widgets.remove("SourceRelative")
+
+# COMMAND ----------
+
+# Get runtime values from interactive widgets
+
+# Either Read data from Repos or from a Store Location...
+if dbutils.widgets.get("LocRelative") == "ReposLoc":
+  # file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red-missingrows.csv"
+  source_file = "/Workspace{}/{}".format(config_helper.folder,dbutils.widgets.get("SourceFile"))
+  source_file_url = "file:"+source_file
+  source_folder = "/Workspace{}/{}".format(config_helper.folder,dbutils.widgets.get("SourceFolder"))
+  source_folder_url = "file:"+source_folder
+elif dbutils.widgets.get("LocRelative") == "StoreLoc":
+  source_file = "{}/{}".format(config_helper.data_file_loc,dbutils.widgets.get("SourceFile"))
+  source_file_url = "dbfs:"+source_file
+  source_folder = "{}/{}".format(config_helper.data_file_loc,dbutils.widgets.get("SourceFolder"))
+  source_folder_url = "dbfs:"+source_folder
+
+target_table = dbutils.widgets.get("TargetTable")
+#"quality_red_bronze"
+  
+print("      source_file: {}\n  source_file_url: {}".format(source_file,source_file_url))
+print("    source_folder: {}\nsource_folder_url: {}".format(source_folder,source_folder_url))
+print("     target_table: {}".format(target_table))
+
+# COMMAND ----------
+
+import os
+os.environ['SOURCE_FOLDER'] = source_folder
+os.environ['SOURCE_FILE'] = source_file
 
 # COMMAND ----------
 
@@ -38,7 +120,27 @@ target_table = "quality_red_bronze"
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(src_file))
+# MAGIC %sh
+# MAGIC echo "listing source folder:" $SOURCE_FOLDER
+# MAGIC ls -l $SOURCE_FOLDER
+# MAGIC echo "listing source file:" $SOURCE_FILE
+# MAGIC ls -l $SOURCE_FILE
+# MAGIC echo "listing source file: data/winequality-red.csv"
+# MAGIC ls -l data/winequality-red.csv
+# MAGIC pwd
+
+# COMMAND ----------
+
+# Workaround to display config secret information
+displayHTML("<span/>".join(config_helper.data_file_loc))
+displayHTML("<span/>".join(config_helper.db_loc))
+displayHTML("<span/>".join(source_file))
+
+# This de-redaction technique does not work :-(
+# x_d_f_l = "x-{}".format(config_helper.data_file_loc)
+# print(x_d_f_l)
+# x_d_f_l_2 = "x" + config_helper.data_file_loc
+# print(x_d_f_l_2)
 
 # COMMAND ----------
 
@@ -48,14 +150,23 @@ display(dbutils.fs.ls(src_file))
 
 # COMMAND ----------
 
+# Start the clock
+now_ts = config_helper.set_start_now()
+print("Start timestamp set as {}.".format(now_ts))
+
+# COMMAND ----------
+
 import os
+
+displayHTML("<span/>".join("source_file: " + source_file))
 
 # "file:" prefix and absolute file path are required for PySpark
 if dbutils.widgets.get("ReadData") == "Yes":
   source_df = (spark.read.format('csv')
                          .option('header',True)
                          .option('inferSchema',True)
-                         .load(src_file.format(current_user))
+#                          .load(source_file.format(current_user))
+                         .load(source_file_url)
               )
 
   display(source_df)
@@ -70,7 +181,7 @@ else:
 
 # COMMAND ----------
 
-source_enh_df = enrich_source(source_df,load_start_dt,'notebook:{}/Load2Bronze'.format(os.getcwd()))
+source_enh_df = enrich_source(source_df,config_helper.start_timestamp,'notebook:{}'.format(config_helper.current_notebook))
 display(source_enh_df)
 
 # COMMAND ----------
@@ -153,7 +264,7 @@ print(source_enh_num_norm_agg_chksum_json)
 write_ret = (source_enh_num_norm_df.write
               .mode("append")
               .format("delta")
-              .saveAsTable("{}.{}".format(db_name,target_table))
+              .saveAsTable("{}.{}".format(config_helper.db_name,target_table))
             )
 
 # COMMAND ----------
@@ -166,10 +277,11 @@ write_ret = (source_enh_num_norm_df.write
 
 from datetime import datetime
 
-track_ret = ( track_load(load_start_dt,
+track_ret = ( track_load(config_helper.spark, config_helper.db_name, config_helper.track_table_name, 
+                         config_helper.start_timestamp,
                          datetime.now(),
-                         current_notebook,
-                         src_file,
+                         config_helper.current_notebook,
+                         source_file_url,
                          target_table,
                          load_count,
                          load_checksum,
@@ -183,7 +295,7 @@ track_ret = ( track_load(load_start_dt,
 
 # COMMAND ----------
 
-display(spark.sql("select *, input_file_name() from {}.{}".format(db_name,target_table)))
+display(spark.sql("select *, input_file_name() Delta_Part_File from {}.{}".format(config_helper.db_name,target_table)))
 
 # COMMAND ----------
 
@@ -202,8 +314,8 @@ display(spark.sql("select *, input_file_name() from {}.{}".format(db_name,target
 
 # COMMAND ----------
 
-display(sql("SELECT * FROM {}.{} WHERE load_source NOT IN ('{}')".format(use_db,target_table,src_file)))
+display(sql("SELECT * FROM {}.{} WHERE load_source NOT IN ('{}')".format(use_db,target_table,source_file)))
 
 # COMMAND ----------
 
-src_file
+source_file

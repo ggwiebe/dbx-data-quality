@@ -32,7 +32,7 @@ def id_source(df,part_col):
 
 # Track Load
 # assumes database and tracking table have already been setup (see setup_functions.py) 
-def track_load(load_start_dt, load_end_dt, load_process, load_source, load_target, load_count, load_checksum, load_metrics):
+def track_load(spark, db_name, track_table_name, load_start_dt, load_end_dt, load_process, load_source, load_target, load_count, load_checksum, load_metrics):
   load = [(load_start_dt,load_end_dt,load_process,load_source,load_target,load_count,load_checksum,load_metrics)]
   load_cols = ["load_start_dt","load_end_dt","load_process","load_source","load_target","load_count","load_checksum","load_metrics"]
   load_df = spark.createDataFrame(data=load, schema=load_cols)

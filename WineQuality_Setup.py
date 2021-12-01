@@ -1,5 +1,16 @@
 # Databricks notebook source
-# MAGIC %md # Template Setup Notebook
+# MAGIC %md # Databricks Prototype Setup Notebook  
+# MAGIC   
+# MAGIC Prototype solution for tracking the quality and lineage of data/files ingested into Databricks.  
+# MAGIC   
+# MAGIC As per documentation in README.md the project is organized with the following characteristics:
+# MAGIC - Includes Python library components
+# MAGIC - Leverages common config via JSON or Secrets
+# MAGIC - Accounts for interactive setup and automated execution
+# MAGIC   
+# MAGIC These elements in the broader Databricks DevOps landscape is shown in the following diagram:  
+# MAGIC <!-- ![Databricks Developer & Operations Landsape](/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/images/DevOps.png "Databrisk DevOps")   -->
+# MAGIC ![Databricks Developer & Operations Landsape](./images/DevOps.png "Databrisk DevOps")  
 
 # COMMAND ----------
 

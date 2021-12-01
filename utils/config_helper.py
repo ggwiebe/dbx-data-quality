@@ -84,6 +84,11 @@ class ConfigHelper:
     print("     store_loc = {}\n       db_name = {},\n data_file_loc = {},\n        db loc = {}".format(store_loc,db_name,self.data_file_loc,self.db_loc))
     return self.list_attrs()
 
+  # Initialize the environment
+  def set_start_now(self):
+    self.start_timestamp = datetime.now()
+    return self.start_timestamp
+
   # Function to setup database
   def setup_db(self):
     print("setup_db called (no parms)...")
