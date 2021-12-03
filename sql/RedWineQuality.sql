@@ -5,12 +5,11 @@ SELECT DISTINCT(load_dt || " - " || load_source || " - " || load_component)
   FROM ggw_wine.quality_red_wine
 ;
 
+
+-- COMMAND ----------
+
 -- Simple count profile
 SELECT COUNT(*)
   FROM ggw_wine.quality_red_wine
 ;
-
-
--- COMMAND ----------
-
 
