@@ -1,5 +1,4 @@
 # Databricks notebook source
-
 # import common librarys
 import json
 from datetime import datetime
