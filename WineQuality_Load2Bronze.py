@@ -78,7 +78,7 @@ displayHTML("<span/>".join("track_table_name: " + config_helper.track_table_name
 dbutils.widgets.dropdown("ReadData", "Yes", ["Yes", "No"], "Re-read Data")
 dbutils.widgets.dropdown("LocRelative", "ReposLoc", ["ReposLoc", "StoreLoc"], "Location Relative To")
 dbutils.widgets.text("SourceFile", "data/winequality-red.csv", "Source File")
-dbutils.widgets.text("SourceFolder", "data/folder/", "Source File")
+dbutils.widgets.text("SourceFolder", "data/folder/", "Source Folder")
 dbutils.widgets.text("TargetTable", "quality_red_wine", "Target Table Name")
 # source_file = "file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red.csv"
 # source_file = "file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red-badchecksum.csv"
@@ -197,19 +197,6 @@ display(source_enh_num_df)
 
 # COMMAND ----------
 
-# import os
-
-# # "file:" prefix and absolute file path are required for PySpark
-# source_df = (spark.read.format('csv')
-#                        .option('header',True)
-#                        .option('inferSchema',True)
-#                        .load(f"file:{os.getcwd()}/data/winequality-red.csv")
-#   )
-
-# display(source_df)
-
-# COMMAND ----------
-
 # MAGIC %md ## Normalize dataframe  
 # MAGIC   
 # MAGIC e.g. fix column names, types, etc.
@@ -301,21 +288,7 @@ display(spark.sql("select *, input_file_name() Delta_Part_File from {}.{}".forma
 
 # MAGIC %md ## Compare load_source as actually loaded to source directory  
 # MAGIC   
-# MAGIC NOTE: The opposite of below!!! :-)
-
-# COMMAND ----------
-
-# input file list - in clause
-file_list = 'file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red.csv'
-print(file_list)
-
-# print("SELECT * FROM {}.quality_red_bronze WHERE load_source NOT IN ('{}')".format(db_name,file_list))
-# display(spark.sql("SELECT * FROM {}.quality_red_bronze WHERE load_source NOT IN '{}'".format(db_name,file_list)))
-
-
-# COMMAND ----------
-
-display(sql("SELECT * FROM {}.{} WHERE load_source NOT IN ('{}')".format(use_db,target_table,source_file)))
+# MAGIC Use view on file list dataframe
 
 # COMMAND ----------
 
