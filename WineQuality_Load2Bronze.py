@@ -221,6 +221,19 @@ display(source_enh_num_norm_df)
 
 # COMMAND ----------
 
+# MAGIC %md ## Write to target table
+
+# COMMAND ----------
+
+# drop_table("quality_red_bronze")
+write_ret = (source_enh_num_norm_df.write
+              .mode("append")
+              .format("delta")
+              .saveAsTable("{}.{}".format(config_helper.db_name,target_table))
+            )
+
+# COMMAND ----------
+
 # MAGIC %md ## Create Load Checksum info  
 # MAGIC   
 # MAGIC Gather metrics of the load set.  
@@ -253,19 +266,6 @@ display(source_enh_num_norm_agg_chksum_df)
 source_enh_num_norm_agg_chksum_json = source_enh_num_norm_agg_chksum_df.toJSON().first()
 
 print(source_enh_num_norm_agg_chksum_json)
-
-# COMMAND ----------
-
-# MAGIC %md ## Write to target table
-
-# COMMAND ----------
-
-# drop_table("quality_red_bronze")
-write_ret = (source_enh_num_norm_df.write
-              .mode("append")
-              .format("delta")
-              .saveAsTable("{}.{}".format(config_helper.db_name,target_table))
-            )
 
 # COMMAND ----------
 
@@ -306,7 +306,8 @@ display(spark.sql("select *, input_file_name() Delta_Part_File from {}.{}".forma
 # COMMAND ----------
 
 # input file list - in clause
-# file_list = 'file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red.csv'
+file_list = 'file:/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/data/winequality-red.csv'
+print(file_list)
 
 # print("SELECT * FROM {}.quality_red_bronze WHERE load_source NOT IN ('{}')".format(db_name,file_list))
 # display(spark.sql("SELECT * FROM {}.quality_red_bronze WHERE load_source NOT IN '{}'".format(db_name,file_list)))
@@ -318,4 +319,43 @@ display(sql("SELECT * FROM {}.{} WHERE load_source NOT IN ('{}')".format(use_db,
 
 # COMMAND ----------
 
-source_file
+# print(source_file)
+print(source_folder_url)
+
+# COMMAND ----------
+
+sourceList = dbutils.fs.ls(source_folder_url)
+sourceDF = spark.createDataFrame(data=sourceList)
+sourceDF.createOrReplaceTempView('wine_quality_source_files')
+
+spark.sql(
+    """
+    CREATE TEMP VIEW wine_quality_source_file AS
+    SELECT *
+    FROM wine_quality_source_files
+    """
+)
+
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT *
+# MAGIC   FROM wine_quality_source_file
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC -- Check all source files loaded
+# MAGIC SELECT DISTINCT(load_source)
+# MAGIC     --   , load_end_dt
+# MAGIC   FROM ggw_wine.load_track
+# MAGIC ;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC -- List all files in wine_quality_source_file not in load_track
+# MAGIC SELECT *
+# MAGIC   FROM wine_quality_source_file
+# MAGIC  WHERE path NOT IN (SELECT DISTINCT(load_source) FROM ggw_wine.load_track )

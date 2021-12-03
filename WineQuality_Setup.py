@@ -10,7 +10,10 @@
 # MAGIC   
 # MAGIC These elements in the broader Databricks DevOps landscape is shown in the following diagram:  
 # MAGIC <!-- ![Databricks Developer & Operations Landsape](/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/images/DevOps.png "Databrisk DevOps")   -->
-# MAGIC ![Databricks Developer & Operations Landsape](./images/DevOps.png "Databrisk DevOps")  
+# MAGIC <!-- ![Databricks Developer & Operations Landsape](./images/DevOps.png "Databrisk DevOps")   -->
+# MAGIC <!-- <img src="/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/images/DevOps.png" alt="Prototype Setup Notebook" > -->
+# MAGIC <!--      style="width: 600px; height: 163px"> -->
+# MAGIC ![Databricks Developer & Operations Landsape](images/DevOps.png)  
 
 # COMMAND ----------
 
