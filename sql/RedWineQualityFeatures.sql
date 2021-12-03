@@ -13,6 +13,15 @@ SELECT *
   FROM ggw_wine.quality_red_wine_features_inferenced_2021_12_03 
 ;
 
+-- Check difference between quality and predicted quality
+SELECT *,
+       prediction - quality Predict_Delta 
+  FROM ggw_wine.quality_red_wine_features_inferenced_2021_12_03 
+ ORDER BY Predict_Delta DESC
+;
+
+
+
 -- DROP TABLE ggw_wine.quality_red_wine_features_infer_2021_12_03;
 
 -- CREATE TABLE ggw_wine.quality_red_wine_features_inferenced_2021_12_03 
