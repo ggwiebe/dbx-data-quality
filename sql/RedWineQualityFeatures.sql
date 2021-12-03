@@ -3,11 +3,11 @@ SELECT *
   FROM ggw_wine.quality_red_wine_features
 ;
 
-DROP TABLE IF EXISTS ggw_wine.quality_red_wine_features;
+-- DROP TABLE IF EXISTS ggw_wine.quality_red_wine_features;
 
-DELETE FROM ggw_wine.quality_red_wine
- WHERE load_dt != '2021-12-02 15:49:49.45855'
-;
+-- DELETE FROM ggw_wine.quality_red_wine
+--  WHERE load_dt != '2021-12-02 15:49:49.45855'
+-- ;
 
 SELECT *
   FROM ggw_wine.quality_red_wine_features_inferenced_2021_12_03 
