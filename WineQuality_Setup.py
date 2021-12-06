@@ -9,11 +9,17 @@
 # MAGIC - Accounts for interactive setup and automated execution
 # MAGIC   
 # MAGIC These elements in the broader Databricks DevOps landscape is shown in the following diagram:  
+# MAGIC   
+# MAGIC <!-- Currently the Markdown engine runs from the UI and not from the data plane  
+# MAGIC      where these files exist or can be read. For this reason, use the GitHub location
+# MAGIC      for the time being - a feature to read MD in UI from Repos is under way!
+# MAGIC -->
 # MAGIC <!-- ![Databricks Developer & Operations Landsape](/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/images/DevOps.png "Databrisk DevOps")   -->
+# MAGIC <!-- ![Databricks Developer & Operations Landsape](images/DevOps.png)   -->
 # MAGIC <!-- ![Databricks Developer & Operations Landsape](./images/DevOps.png "Databrisk DevOps")   -->
 # MAGIC <!-- <img src="/Workspace/Repos/glenn.wiebe@databricks.com/dbx-data-quality/images/DevOps.png" alt="Prototype Setup Notebook" > -->
 # MAGIC <!--      style="width: 600px; height: 163px"> -->
-# MAGIC ![Databricks Developer & Operations Landsape](images/DevOps.png)  
+# MAGIC ![Databricks Developer & Operations Landsape](https://raw.githubusercontent.com/ggwiebe/dbx-data-quality/main/images/DevOps.png?token=AEXQUADAEJ7G6QDZIUPXKPDBVZ3KE "Databrisk DevOps")
 
 # COMMAND ----------
 
